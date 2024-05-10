@@ -1,0 +1,15 @@
+rootProject.name = 'SecureApp'
+
+// Apply the native modules settings gradle script
+apply from: file("../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); 
+applyNativeModulesSettingsGradle(settings)
+
+// Include the main app project
+include ':app'
+
+// Include React Native's new Gradle plugin
+includeBuild('../node_modules/@react-native/gradle-plugin')
+
+// Include react-native-safe-area-context
+include ':react-native-safe-area-context'
+project(':react-native-safe-area-context').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-safe-area-context/android')
