@@ -71,7 +71,7 @@ const HomeScreen = ({ navigation }) => {
       
       <Button title="Go to Courses" onPress={() => navigation.navigate('Course')} color="#D32F2F" />
 
-      <Button title="Go to Furnitures" onPress={() => navigation.navigate('Furniture')} color="#D32F2F" />
+      <Button title="Go to Furnitures" onPress={() => navigation.navigate('FurnitureHome')} color="#D32F2F" />
 
     </View>
   );
