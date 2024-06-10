@@ -32,20 +32,56 @@ const CourseHome = () => {
       title: 'React - Native Development',
       author: 'Mohit Kulkarni',
       duration: '16 hours',
-      image: require('./assets/react 1.png'), // Correct the path if necessary
-      url: 'https://dev.d25obo24yveepo.amplifyapp.com/'
+      image: require('./assets/react1.png'), // Correct the path if necessary
+      url: 'https://dev.d30t3y0rjxl2ib.amplifyapp.com/'
     },
     {
       title: 'Flutter Development',
       author: 'Mohit Kulkarni',
       duration: '16 hours',
-      image: require('./assets/flutter 1.png'), // Correct the path if necessary
+      image: require('./assets/flutter1.png'), // Correct the path if necessary
     },
     {
       title: 'Firebase Authentication',
       author: 'Mohit Kulkarni',
       duration: '14 hours',
-      image: require('./assets/flutter 2.png'), // Correct the path if necessary
+      image: require('./assets/firebase.png'), // Correct the path if necessary
+      url: 'https://dev.d30t3y0rjxl2ib.amplifyapp.com/Firebase/'
+    },
+    {
+      title: 'Furniture Component',
+      author: 'Mohit Kulkarni',
+      duration: '14 hours',
+      image: require('./assets/homew.png'), // Correct the path if necessary
+      url: 'https://dev.d30t3y0rjxl2ib.amplifyapp.com/EcommerceTutorial/'
+    },
+    {
+      title: 'Firebase Firestore Database',
+      author: 'Mohit Kulkarni',
+      duration: '14 hours',
+      image: require('./assets/firestore.png'), // Correct the path if necessary
+      url: 'https://dev.d30t3y0rjxl2ib.amplifyapp.com/FirestoreTutorial/'
+    },
+    {
+      title: 'Furniture Cart',
+      author: 'Mohit Kulkarni',
+      duration: '14 hours',
+      image: require('./assets/cart.png'), // Correct the path if necessary
+      url: 'https://dev.d30t3y0rjxl2ib.amplifyapp.com/ShoppingCart/'
+    },
+    {
+      title: 'Any form Creation ',
+      author: 'Mohit Kulkarni',
+      duration: '14 hours',
+      image: require('./assets/form.png'), // Correct the path if necessary
+      url: 'https://dev.d30t3y0rjxl2ib.amplifyapp.com/Form/'
+    },
+    {
+      title: 'Firestore Database Import and export ',
+      author: 'Mohit Kulkarni',
+      duration: '14 hours',
+      image: require('./assets/import.png'), // Correct the path if necessary
+      url: 'https://dev.d30t3y0rjxl2ib.amplifyapp.com/Data/'
     },
   ];
 

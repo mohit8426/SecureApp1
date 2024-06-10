@@ -5,11 +5,13 @@ import { CartContext } from './CartContext';  // Import CartContext
 
 const FurnitureHome = ({ navigation }) => {
   const [furnitureItems, setFurnitureItems] = useState([]);
+  const [filteredItems, setFilteredItems] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState('all');
   const { addToCart } = useContext(CartContext);  // Use CartContext
 
   useEffect(() => {
     const fetchItems = async () => {
-      const collections = ['chair', 'table', 'sofa', 'bed']; // Adjust these to your actual Firestore collection names
+      const collections = ['chair', 'table', 'sofa', 'bedframe']; // Adjust these to your actual Firestore collection names
       let items = [];
       for (const collection of collections) {
         const snapshot = await firestore().collection(collection).get();
@@ -20,10 +22,20 @@ const FurnitureHome = ({ navigation }) => {
         items = items.concat(docs);
       }
       setFurnitureItems(items);
+      setFilteredItems(items);  // Initialize filtered items
     };
 
     fetchItems();
   }, []);
+
+  useEffect(() => {
+    if (selectedCategory === 'all') {
+      setFilteredItems(furnitureItems);
+    } else {
+      const categoryItems = furnitureItems.filter(item => item.type === selectedCategory);
+      setFilteredItems(categoryItems);
+    }
+  }, [selectedCategory, furnitureItems]);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -38,23 +50,25 @@ const FurnitureHome = ({ navigation }) => {
         </View>
 
         <View style={styles.categories}>
-          <TouchableOpacity style={styles.categoryButton}>
-            <Text style={styles.categoryText}>GOOD DEALS</Text>
+          <TouchableOpacity style={styles.categoryButton} onPress={() => setSelectedCategory('chair')}>
+            <Text style={styles.categoryText}>CHAIR</Text>
           </TouchableOpacity>
-         
-          <TouchableOpacity style={styles.categoryButton}>
-            <Text style={styles.categoryText}>FURNITURE</Text>
+          <TouchableOpacity style={styles.categoryButton} onPress={() => setSelectedCategory('table')}>
+            <Text style={styles.categoryText}>TABLE</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.categoryButton}>
-            <Text style={styles.categoryText}>LIGHTING</Text>
+          <TouchableOpacity style={styles.categoryButton} onPress={() => setSelectedCategory('sofa')}>
+            <Text style={styles.categoryText}>SOFA</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.categoryButton}>
-            <Text style={styles.categoryText}>DECOR</Text>
+          <TouchableOpacity style={styles.categoryButton} onPress={() => setSelectedCategory('bedframe')}>
+            <Text style={styles.categoryText}>BEDFRAME</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.categoryButton} onPress={() => setSelectedCategory('all')}>
+            <Text style={styles.categoryText}>ALL</Text>
           </TouchableOpacity>
         </View>
 
         <View style={styles.banner}>
-          <TouchableOpacity style={styles.bannerButton}>
+        <TouchableOpacity style={styles.bannerButton} onPress={() => navigation.navigate('Seller')}>
             <Text style={styles.bannerText}>Give a second life to your furniture</Text>
             <Text style={styles.bannerSubText}>SELL</Text>
           </TouchableOpacity>
@@ -67,7 +81,7 @@ const FurnitureHome = ({ navigation }) => {
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>POPULAR PRODUCTS</Text>
           <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
-            {furnitureItems.slice(0, 5).map((item) => (
+            {filteredItems.slice(0, 5).map((item) => (
               <View key={item.key} style={styles.card}>
                 <Image
                   source={{ uri: item.chair_img || item.table_img || item.sofa_img || item.bed_img }}
@@ -91,7 +105,7 @@ const FurnitureHome = ({ navigation }) => {
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>GOOD DEALS</Text>
           <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
-            {furnitureItems.slice(5, 10).map((item) => (
+            {filteredItems.slice(5, 10).map((item) => (
               <View key={item.key} style={styles.card}>
                 <Image
                   source={{ uri: item.chair_img || item.table_img || item.sofa_img || item.bed_img }}
@@ -128,7 +142,7 @@ const FurnitureHome = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f8f9fa', // Light grey background
+    backgroundColor: '#f0f8ff', // Light mode blue background
   },
   scrollView: {
     marginHorizontal: 20,
@@ -141,10 +155,14 @@ const styles = StyleSheet.create({
   },
   searchBar: {
     flex: 1,
-    backgroundColor: '#e9ecef', // Light grey
+    backgroundColor: '#fff',
     borderRadius: 20,
     paddingHorizontal: 15,
     paddingVertical: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.2,
+    shadowRadius: 1,
   },
   searchText: {
     color: '#6c757d', // Grey text
@@ -163,9 +181,13 @@ const styles = StyleSheet.create({
     marginVertical: 10,
   },
   categoryButton: {
-    backgroundColor: '#ffffff', // White background
+    backgroundColor: '#ffefd5', // Light orange background
     padding: 10,
     borderRadius: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.2,
+    shadowRadius: 1,
   },
   categoryText: {
     color: '#343a40', // Dark grey text
@@ -178,12 +200,16 @@ const styles = StyleSheet.create({
   },
   bannerButton: {
     flex: 1,
-    backgroundColor: '#ffc107', // Yellow background
+    backgroundColor: '#ffa07a', // Light salmon background
     padding: 20,
     borderRadius: 10,
     marginHorizontal: 5,
     justifyContent: 'center',
     alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.2,
+    shadowRadius: 1,
   },
   bannerText: {
     color: '#343a40', // Dark grey text
@@ -211,6 +237,10 @@ const styles = StyleSheet.create({
     padding: 10,
     marginRight: 10,
     alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.2,
+    shadowRadius: 1,
   },
   image: {
     width: 100,
@@ -224,9 +254,15 @@ const styles = StyleSheet.create({
     marginBottom: 5,
     textAlign: 'center'
   },
-  price: {
+  button: {
+    backgroundColor: '#007bff', // Blue background
+    padding: 10,
+    borderRadius: 5,
+    marginTop: 10,
+  },
+  buttonText: {
+    color: 'white',
     fontSize: 14,
-    color: '#007bff', // Bootstrap primary blue
     fontWeight: 'bold',
     textAlign: 'center'
   },
@@ -237,11 +273,15 @@ const styles = StyleSheet.create({
   },
   dealButton: {
     flex: 1,
-    backgroundColor: '#f8f9fa', // Light grey background
+    backgroundColor: '#ffefd5', // Light orange background
     padding: 10,
     borderRadius: 10,
     marginHorizontal: 5,
     alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.2,
+    shadowRadius: 1,
   },
   dealText: {
     color: '#343a40', // Dark grey text

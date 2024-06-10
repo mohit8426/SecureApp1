@@ -28,7 +28,7 @@ const HomeScreen = ({ navigation }) => {
         }
       }
     };
-  
+
     // Trigger the role fetch when there is a current user
     if (auth.currentUser) {
       fetchUserRole(auth.currentUser);
@@ -67,12 +67,11 @@ const HomeScreen = ({ navigation }) => {
         style={styles.roleImage}
         resizeMode="contain"
       />
-      <Button title="Sign Out" onPress={handleSignOut} color="#D32F2F" />
-      
-      <Button title="Go to Courses" onPress={() => navigation.navigate('Course')} color="#D32F2F" />
-
+      {userRole === 'Admin' && (
+        <Button title="Go to Courses" onPress={() => navigation.navigate('Course')} color="#D32F2F" />
+      )}
       <Button title="Go to Furnitures" onPress={() => navigation.navigate('FurnitureHome')} color="#D32F2F" />
-
+      <Button title="Sign Out" onPress={handleSignOut} color="#D32F2F" />
     </View>
   );
 };
