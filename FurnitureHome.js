@@ -6,6 +6,7 @@ import { CartContext } from './CartContext';  // Import CartContext
 const FurnitureHome = ({ navigation }) => {
   const [furnitureItems, setFurnitureItems] = useState([]);
   const [filteredItems, setFilteredItems] = useState([]);
+  const [newArrivals, setNewArrivals] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState('all');
   const { addToCart } = useContext(CartContext);  // Use CartContext
 
@@ -18,11 +19,13 @@ const FurnitureHome = ({ navigation }) => {
         const docs = snapshot.docs.map(doc => ({
           ...doc.data(),
           key: doc.id,  // Ensuring each item has a unique key
+          createdAt: doc.data().createdAt ? doc.data().createdAt.toDate() : new Date(), // Handling Firestore timestamps
         }));
         items = items.concat(docs);
       }
       setFurnitureItems(items);
       setFilteredItems(items);  // Initialize filtered items
+      setNewArrivals(items.sort((a, b) => b.createdAt - a.createdAt).slice(0, 5));  // Initialize new arrivals
     };
 
     fetchItems();
@@ -36,6 +39,21 @@ const FurnitureHome = ({ navigation }) => {
       setFilteredItems(categoryItems);
     }
   }, [selectedCategory, furnitureItems]);
+
+  const renderImage = (item) => {
+    const uri = item.chair_img || item.table_img || item.sofa_img || item.bedframe_img;
+
+    return (
+      <Image
+        source={{ uri }}
+        style={styles.image}
+        defaultSource={require('./assets/fallback.png')} // Path to your fallback image
+        onError={(e) => {
+          console.error('Loading image failed!', e.nativeEvent.error);
+        }}
+      />
+    );
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -72,7 +90,8 @@ const FurnitureHome = ({ navigation }) => {
             <Text style={styles.bannerText}>Give a second life to your furniture</Text>
             <Text style={styles.bannerSubText}>SELL</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.bannerButton}>
+          <TouchableOpacity style={styles.bannerButton} onPress={() => navigation.navigate('Buy')}>
+
             <Text style={styles.bannerText}>Find the best offers of the market</Text>
             <Text style={styles.bannerSubText}>BUY</Text>
           </TouchableOpacity>
@@ -83,11 +102,23 @@ const FurnitureHome = ({ navigation }) => {
           <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
             {filteredItems.slice(0, 5).map((item) => (
               <View key={item.key} style={styles.card}>
-                <Image
-                  source={{ uri: item.chair_img || item.table_img || item.sofa_img || item.bed_img }}
-                  style={styles.image}
-                />
-                <Text style={styles.title}>{item.chair_name || item.table_name || item.sofa_name || item.bed_name}</Text>
+                {renderImage(item)}
+                <Text style={styles.title}>{item.chair_name || item.table_name || item.sofa_name || item.bedframe_name}</Text>
+                <TouchableOpacity style={styles.button} onPress={() => addToCart(item)}>
+                  <Text style={styles.buttonText}>Add to Cart</Text>
+                </TouchableOpacity>
+              </View>
+            ))}
+          </ScrollView>
+        </View>
+
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>NEW ARRIVALS</Text>
+          <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
+            {newArrivals.map((item) => (
+              <View key={item.key} style={styles.card}>
+                {renderImage(item)}
+                <Text style={styles.title}>{item.chair_name || item.table_name || item.sofa_name || item.bedframe_name}</Text>
                 <TouchableOpacity style={styles.button} onPress={() => addToCart(item)}>
                   <Text style={styles.buttonText}>Add to Cart</Text>
                 </TouchableOpacity>
@@ -107,11 +138,8 @@ const FurnitureHome = ({ navigation }) => {
           <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
             {filteredItems.slice(5, 10).map((item) => (
               <View key={item.key} style={styles.card}>
-                <Image
-                  source={{ uri: item.chair_img || item.table_img || item.sofa_img || item.bed_img }}
-                  style={styles.image}
-                />
-                <Text style={styles.title}>{item.chair_name || item.table_name || item.sofa_name || item.bed_name}</Text>
+                {renderImage(item)}
+                <Text style={styles.title}>{item.chair_name || item.table_name || item.sofa_name || item.bedframe_name}</Text>
                 <TouchableOpacity style={styles.button} onPress={() => addToCart(item)}>
                   <Text style={styles.buttonText}>Add to Cart</Text>
                 </TouchableOpacity>

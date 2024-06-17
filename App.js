@@ -16,6 +16,7 @@ import FurnitureHome from './FurnitureHome';
 import ShoppingCart from './ShoppingCart';
 import Checkout from './Checkout';
 import Seller from './Seller';
+import Buy from './Buyer';
 
 const Stack = createNativeStackNavigator();
 
@@ -37,6 +38,7 @@ function App() {
               <Stack.Screen name="ShoppingCart" component={ShoppingCart} options={{ title: 'Shopping Cart' }} />
               <Stack.Screen name="Checkout" component={Checkout} options={{ title: 'Checkout' }} />
               <Stack.Screen name="Seller" component={Seller} options={{ title: 'Seller' }} />
+              <Stack.Screen name="Buy" component={Buy} options={{ title: 'Buy' }} />
               {/* Add more screens as needed */}
             </Stack.Navigator>
           </NavigationContainer>

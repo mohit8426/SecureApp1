@@ -23,6 +23,7 @@ const Seller = () => {
       [`${type}_productId`]: productId,
       quantity: quantity,
       [`${type}_img`]: imageUrl,
+      createdAt: firestore.FieldValue.serverTimestamp() // Add createdAt field
     };
 
     try {
