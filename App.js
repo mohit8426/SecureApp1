@@ -17,6 +17,7 @@ import ShoppingCart from './ShoppingCart';
 import Checkout from './Checkout';
 import Seller from './Seller';
 import Buy from './Buyer';
+import Dashboard from './AdminDashboard';
 
 const Stack = createNativeStackNavigator();
 
@@ -39,6 +40,7 @@ function App() {
               <Stack.Screen name="Checkout" component={Checkout} options={{ title: 'Checkout' }} />
               <Stack.Screen name="Seller" component={Seller} options={{ title: 'Seller' }} />
               <Stack.Screen name="Buy" component={Buy} options={{ title: 'Buy' }} />
+              <Stack.Screen name="Dashboard" component={Dashboard} options={{ title: 'Dashboard' }} />
               {/* Add more screens as needed */}
             </Stack.Navigator>
           </NavigationContainer>

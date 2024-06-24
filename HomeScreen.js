@@ -1,5 +1,3 @@
-// HomeScreen.js
-
 import React, { useState, useEffect } from 'react';
 import { View, Text, Button, StyleSheet, Image, Dimensions } from 'react-native';
 import { getAuth } from 'firebase/auth';
@@ -35,6 +33,12 @@ const HomeScreen = ({ navigation }) => {
     }
   }, [auth]);
 
+  useEffect(() => {
+    if (userRole === 'Admin') {
+      navigation.navigate('Dashboard');
+    }
+  }, [userRole, navigation]);
+
   const handleSignOut = async () => {
     try {
       await auth.signOut();
@@ -67,7 +71,7 @@ const HomeScreen = ({ navigation }) => {
         style={styles.roleImage}
         resizeMode="contain"
       />
-      {userRole === 'Admin' && (
+      {userRole !== 'Admin' && (
         <Button title="Go to Courses" onPress={() => navigation.navigate('Course')} color="#D32F2F" />
       )}
       <Button title="Go to Furnitures" onPress={() => navigation.navigate('FurnitureHome')} color="#D32F2F" />
