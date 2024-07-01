@@ -1,28 +1,25 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, Button, StyleSheet, Image, Dimensions } from 'react-native';
 import { getAuth } from 'firebase/auth';
+import { getFirestore, doc, getDoc } from 'firebase/firestore';
 import { FIREBASE_APP } from './FirebaseConfig';
 
 const { width, height } = Dimensions.get('window');
 
 const HomeScreen = ({ navigation }) => {
-  const [userRole, setUserRole] = useState('regular user');
+  const [userRole, setUserRole] = useState(null);
   const auth = getAuth(FIREBASE_APP);
+  const firestore = getFirestore(FIREBASE_APP);
 
   useEffect(() => {
     const fetchUserRole = async (authUser) => {
-      if (authUser && authUser.email) {
-        // Extract a part of the email to determine role
-        const emailPrefix = authUser.email.split('@')[0];
-        // Check if the email prefix contains admin, superadmin, or manager
-        if (emailPrefix.toLowerCase().includes('admin')) {
-          setUserRole('Admin');
-        } else if (emailPrefix.toLowerCase().includes('superadmin')) {
-          setUserRole('Super Admin');
-        } else if (emailPrefix.toLowerCase().includes('manager')) {
-          setUserRole('Manager');
+      if (authUser) {
+        const userDocRef = doc(firestore, 'users', authUser.uid);
+        const userDoc = await getDoc(userDocRef);
+        if (userDoc.exists()) {
+          setUserRole(userDoc.data().role || 'User');
         } else {
-          setUserRole('User'); // Default to 'User' for all other emails
+          setUserRole('User'); // Default role if user document doesn't exist
         }
       }
     };
@@ -31,10 +28,10 @@ const HomeScreen = ({ navigation }) => {
     if (auth.currentUser) {
       fetchUserRole(auth.currentUser);
     }
-  }, [auth]);
+  }, [auth, firestore]);
 
   useEffect(() => {
-    if (userRole === 'Admin') {
+    if (userRole === 'admin' || userRole === 'Super Admin' || userRole === 'Manager') {
       navigation.navigate('Dashboard');
     }
   }, [userRole, navigation]);
@@ -71,9 +68,6 @@ const HomeScreen = ({ navigation }) => {
         style={styles.roleImage}
         resizeMode="contain"
       />
-      {userRole !== 'Admin' && (
-        <Button title="Go to Courses" onPress={() => navigation.navigate('Course')} color="#D32F2F" />
-      )}
       <Button title="Go to Furnitures" onPress={() => navigation.navigate('FurnitureHome')} color="#D32F2F" />
       <Button title="Sign Out" onPress={handleSignOut} color="#D32F2F" />
     </View>

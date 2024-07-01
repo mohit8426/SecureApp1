@@ -1,10 +1,12 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { SafeAreaView, ScrollView, View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
+import { SafeAreaView, ScrollView, View, Text, TouchableOpacity, Image, StyleSheet, Modal, Button } from 'react-native';
 import firestore from '@react-native-firebase/firestore';
 import { CartContext } from './CartContext';  // Import CartContext
 
-const Buy = ({ navigation }) => {
+const Buy = () => {
   const [products, setProducts] = useState([]);
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [modalVisible, setModalVisible] = useState(false);
   const { addToCart } = useContext(CartContext);  // Use CartContext
 
   useEffect(() => {
@@ -40,6 +42,16 @@ const Buy = ({ navigation }) => {
     );
   };
 
+  const openModal = (item) => {
+    setSelectedProduct(item);
+    setModalVisible(true);
+  };
+
+  const closeModal = () => {
+    setSelectedProduct(null);
+    setModalVisible(false);
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView style={styles.scrollView}>
@@ -52,12 +64,34 @@ const Buy = ({ navigation }) => {
             <TouchableOpacity style={styles.button} onPress={() => addToCart(item)}>
               <Text style={styles.buttonText}>Add to Cart</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('ProductDetails', { item })}>
+            <TouchableOpacity style={styles.button} onPress={() => openModal(item)}>
               <Text style={styles.buttonText}>View Details</Text>
             </TouchableOpacity>
           </View>
         ))}
       </ScrollView>
+
+      {selectedProduct && (
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={modalVisible}
+          onRequestClose={closeModal}
+        >
+          <View style={styles.modalView}>
+            {renderImage(selectedProduct)}
+            <Text style={styles.modalTitle}>{selectedProduct.chair_name || selectedProduct.table_name || selectedProduct.sofa_name || selectedProduct.bedframe_name}</Text>
+            <Text style={styles.modalDescription}>{selectedProduct.chair_desc || selectedProduct.table_desc || selectedProduct.sofa_desc || selectedProduct.bedframe_desc}</Text>
+            <Text style={styles.modalPrice}>${selectedProduct.price}</Text>
+            <TouchableOpacity style={styles.button} onPress={() => { addToCart(selectedProduct); closeModal(); }}>
+              <Text style={styles.buttonText}>Add to Cart</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.button} onPress={closeModal}>
+              <Text style={styles.buttonText}>Close</Text>
+            </TouchableOpacity>
+          </View>
+        </Modal>
+      )}
     </SafeAreaView>
   );
 };
@@ -117,7 +151,41 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: 'bold',
     textAlign: 'center'
-  }
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: 'white',
+    borderRadius: 20,
+    padding: 35,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  modalTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#343a40', // Dark grey text
+    marginVertical: 10,
+    textAlign: 'center',
+  },
+  modalDescription: {
+    fontSize: 16,
+    color: '#343a40', // Dark grey text
+    marginBottom: 10,
+    textAlign: 'center',
+  },
+  modalPrice: {
+    fontSize: 18,
+    color: '#007bff', // Blue text
+    marginBottom: 10,
+    textAlign: 'center',
+  },
 });
 
 export default Buy;
