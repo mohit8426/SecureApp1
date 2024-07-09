@@ -1,32 +1,56 @@
-// SignupScreen.js
-
 import React, { useState } from 'react';
 import { View, TextInput, TouchableOpacity, Text, StyleSheet } from 'react-native';
-import { FIREBASE_AUTH } from './FirebaseConfig';
+import { FIREBASE_AUTH, FIREBASE_APP } from './FirebaseConfig';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import Toast from 'react-native-toast-message';
-
-
-
-
+import firestore from '@react-native-firebase/firestore';
 
 const SignupScreen = ({ navigation }) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
 
+    const addUserToFirestore = async (user) => {
+        const userData = {
+            uid: user.uid,
+            email: user.email || null,
+            displayName: user.displayName || null,
+            phoneNumber: user.phoneNumber || null,
+            photoURL: user.photoURL || null,
+            disabled: user.disabled || false,
+            metadata: {
+                creationTime: user.metadata.creationTime || null,
+                lastSignInTime: user.metadata.lastSignInTime || null,
+            },
+            role: 'user', // Default role
+        };
+
+        try {
+            // Fetch existing user document to check for an existing role
+            const doc = await firestore().collection('users').doc(user.uid).get();
+            if (doc.exists && doc.data().role) {
+                userData.role = doc.data().role;
+            }
+            await firestore().collection('users').doc(user.uid).set(userData, { merge: true });
+            console.log(`Successfully added user ${user.uid} to Firestore`);
+        } catch (error) {
+            console.error(`Error adding user ${user.uid} to Firestore:`, error);
+        }
+    };
+
     const handleSignup = () => {
-        // You would integrate captcha verification here before creating the user
         createUserWithEmailAndPassword(FIREBASE_AUTH, email, password)
             .then((userCredential) => {
+                const user = userCredential.user;
+                addUserToFirestore(user);
                 Toast.show({
                     type: 'success',
                     text1: 'Signup successful',
                     text2: 'You have been successfully registered!'
-                  });
-                // Handle successful signup
+                });
                 // Redirect to home screen or somewhere appropriate
-                console.log('User account created & signed in!', userCredential);
+                navigation.navigate('Home');
+                console.log('User account created & signed in!', user);
             })
             .catch((error) => {
                 setError(error.message);

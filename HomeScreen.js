@@ -31,8 +31,11 @@ const HomeScreen = ({ navigation }) => {
   }, [auth, firestore]);
 
   useEffect(() => {
-    if (userRole === 'admin' || userRole === 'Super Admin' || userRole === 'Manager') {
+    if (userRole === 'admin' ) {
       navigation.navigate('Dashboard');
+    }
+    else if ( userRole === 'superadmin' || userRole === 'Manager') {
+      navigation.navigate('SuperAdmin');
     }
   }, [userRole, navigation]);
 
