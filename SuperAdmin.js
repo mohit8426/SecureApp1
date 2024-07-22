@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { SafeAreaView, View, Text, TouchableOpacity, StyleSheet, FlatList, Modal, TextInput, Button, Alert } from 'react-native';
+import { SafeAreaView, View, Text, TouchableOpacity, StyleSheet, FlatList, Modal, TextInput, Button, Alert, ScrollView } from 'react-native';
 import firestore from '@react-native-firebase/firestore';
 import { getAuth } from 'firebase/auth';
 import { FIREBASE_APP } from './FirebaseConfig';
+import CheckBox from '@react-native-community/checkbox';
 
 const SuperAdminDashboard = ({ navigation }) => {
   const [users, setUsers] = useState([]);
@@ -43,10 +44,18 @@ const SuperAdminDashboard = ({ navigation }) => {
   };
 
   const handleChangeRole = (role) => {
-    setSelectedUser({
-      ...selectedUser,
-      role,
-    });
+    const roles = selectedUser.roles || [];
+    if (roles.includes(role)) {
+      setSelectedUser({
+        ...selectedUser,
+        roles: roles.filter(r => r !== role),
+      });
+    } else {
+      setSelectedUser({
+        ...selectedUser,
+        roles: [...roles, role],
+      });
+    }
   };
 
   const handleInputChange = (field, value) => {
@@ -68,7 +77,7 @@ const SuperAdminDashboard = ({ navigation }) => {
   const renderItem = ({ item }) => (
     <View style={styles.card}>
       <Text style={styles.userInfo}>Email: {item.email}</Text>
-      <Text style={styles.userInfo}>Role: {item.role}</Text>
+      <Text style={styles.userInfo}>Roles: {item.roles?.join(', ') || 'No roles assigned'}</Text>
       <TouchableOpacity style={styles.button} onPress={() => handleEditUser(item)}>
         <Text style={styles.buttonText}>Edit User</Text>
       </TouchableOpacity>
@@ -116,10 +125,18 @@ const SuperAdminDashboard = ({ navigation }) => {
               onChangeText={(value) => handleInputChange('phoneNumber', value)}
             />
             <View style={styles.roleContainer}>
-              <Button title="User" onPress={() => handleChangeRole('User')} />
-              <Button title="Admin" onPress={() => handleChangeRole('Admin')} />
-              <Button title="Super Admin" onPress={() => handleChangeRole('Super Admin')} />
-              <Button title="Manager" onPress={() => handleChangeRole('Manager')} />
+              <Text style={styles.roleTitle}>Assign Roles:</Text>
+              <View style={styles.roleCheckboxContainer}>
+                {['User', 'Admin', 'Super Admin', 'Manager'].map(role => (
+                  <View key={role} style={styles.roleCheckbox}>
+                    <CheckBox
+                      value={selectedUser.roles?.includes(role)}
+                      onValueChange={() => handleChangeRole(role)}
+                    />
+                    <Text style={styles.roleText}>{role}</Text>
+                  </View>
+                ))}
+              </View>
             </View>
             <TouchableOpacity style={styles.button} onPress={handleUpdateUser}>
               <Text style={styles.buttonText}>Update User</Text>
@@ -221,10 +238,28 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   roleContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    width: '100%',
     marginVertical: 10,
+    width: '100%',
+  },
+  roleTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#343a40',
+    marginBottom: 10,
+  },
+  roleCheckboxContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-around',
+  },
+  roleCheckbox: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  roleText: {
+    fontSize: 16,
+    color: '#343a40',
+    marginLeft: 5,
   },
 });
 
